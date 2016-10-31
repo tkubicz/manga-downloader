@@ -1,4 +1,4 @@
-package eu.lynxware
+package eu.lynxware.util
 
 import java.io.{File, FileOutputStream, InputStream, OutputStream}
 import java.net.{HttpURLConnection, URL, URLConnection}

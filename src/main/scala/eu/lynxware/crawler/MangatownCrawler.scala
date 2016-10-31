@@ -1,7 +1,7 @@
-package eu.lynxware
+package eu.lynxware.crawler
 
 import com.typesafe.scalalogging.LazyLogging
-import eu.lynxware.MangatownCrawler.{Chapter, Manga, Part}
+import eu.lynxware.crawler.MangatownCrawler.{Chapter, Manga, Part}
 
 import scala.io.Source
 
@@ -35,13 +35,14 @@ class MangatownCrawler(mangaName: String) extends LazyLogging {
     logger.debug("downloading page: {}", partLink)
     val html = Source.fromURL(partLink).mkString
 
-    logger.debug("searching for image")
+    logger.debug("searching for images")
     imageLinkPattern.findFirstIn(html)
   }
 }
 
 object MangatownCrawler {
   def apply(mangaName: String): MangatownCrawler = new MangatownCrawler(mangaName)
+
   case class Manga(name: String, chapters: Seq[Chapter])
   case class Chapter(name: String, parts: Seq[Part])
   case class Part(name: String, imageLink: Option[String])

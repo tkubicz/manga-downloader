@@ -1,15 +1,16 @@
 package eu.lynxware
 
 import java.io.File
-import java.util.concurrent.{ExecutorService, Executors, ThreadPoolExecutor}
+import java.util.concurrent.Executors
 
 import com.typesafe.scalalogging.LazyLogging
+import eu.lynxware.crawler.MangatownCrawler
 
 import scala.concurrent.{ExecutionContext, Future}
 
 object Main extends App with LazyLogging {
 
-  import FileDownloader._
+  import eu.lynxware.util.FileDownloader._
 
   val chapterNamePattern = s"(c(\\d{1,4}|\\d{1,4}.\\d{1,4}))".r
   val partNamePattern = s"(\\d{1,4}.html)".r
@@ -34,7 +35,7 @@ object Main extends App with LazyLogging {
       case None => throw new RuntimeException
     }
 
-    logger.debug("Chapter path: " + mangaPath + chapterName )
+    logger.debug("Chapter path: " + mangaPath + chapterName)
     val dir = new File(mangaPath + chapterName)
     if (!dir.mkdirs()) {
       throw new RuntimeException("Could not create directory")
