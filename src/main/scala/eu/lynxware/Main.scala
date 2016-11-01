@@ -5,6 +5,7 @@ import java.util.concurrent.Executors
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.lynxware.crawler.MangatownCrawler
+import eu.lynxware.util.FileUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
