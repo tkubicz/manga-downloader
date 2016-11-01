@@ -7,6 +7,7 @@ import com.typesafe.scalalogging.LazyLogging
 import eu.lynxware.crawler.MangatownCrawler
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 object Main extends App with LazyLogging {
 
@@ -16,20 +17,16 @@ object Main extends App with LazyLogging {
   val partNamePattern = s"(\\d{1,4}.html)".r
 
   val mangaName = "berserk"
-  val crawler = MangatownCrawler(mangaName)
 
-  //val manga = crawler.getManga()
+  val crawler = MangatownCrawler(mangaName)
 
   val mangaPath = "/home/tku/Pobrane/berserk/"
 
   val chapters = crawler.getListOfChapters
-  val parts = crawler.getListOfPartsInChapter(chapters(0))
-  val maybeImageLink = crawler.getImageLink(parts(0))
-
 
   implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(5))
 
-  chapters.take(10).foreach { ch =>
+  val result = chapters.take(2).map { ch =>
     val chapterName = extractChapterName(ch) match {
       case Some(name) => name
       case None => throw new RuntimeException
@@ -41,11 +38,11 @@ object Main extends App with LazyLogging {
       throw new RuntimeException("Could not create directory")
     }
 
-    Future {
+    val f = Future {
       crawler.getListOfPartsInChapter(ch).foreach { part =>
         crawler.getImageLink(part) match {
           case Some(imageLink) =>
-            logger.info("part: {}, imageLink: {}", part, imageLink)
+            logger.debug("part: {}, imageLink: {}", part, imageLink)
             val partName = extractPartName(part) match {
               case Some(p) => p
               case None => "1"
@@ -55,7 +52,18 @@ object Main extends App with LazyLogging {
           case None => logger.error("No image link")
         }
       }
+      ch
     }
+    f.onComplete {
+      case Success(e) => updateProgress(e)
+    }
+
+    f
+  }
+
+  Future.sequence(result).onComplete {
+    case Success(e) => downloadFinished()
+    case Failure(e) => logger.error("Something went wrong", e)
   }
 
   def extractChapterName(link: String): Option[String] = {
@@ -67,15 +75,11 @@ object Main extends App with LazyLogging {
     partNamePattern.findFirstIn(link)
   }
 
-  /*maybeImageLink match {
-    case Some(imageLink) => {
-      logger.debug("image link: " + imageLink)
-      logger.debug("downloading file")
-      val file = new File("/home/tku/Pobrane/test.jpg")
-      downloadFile(imageLink, file)
-      logger.debug("file downloaded")
-    }
+  def downloadFinished(): Unit = {
+    logger.info("Download has finished")
+  }
 
-    case None => logger.error("Could not find image link")
-  }*/
+  def updateProgress(chapterFinished: String): Unit = {
+    logger.info("Chapter {} has been downloaded", chapterFinished)
+  }
 }
