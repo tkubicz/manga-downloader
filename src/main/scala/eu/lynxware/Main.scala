@@ -23,6 +23,9 @@ object Main extends App with LazyLogging {
 
   val epub = new Epub
   epub.createMimetypeFile(Paths.get(mangaPath))
+  epub.createContainerFile(Paths.get(mangaPath).resolve("META-INF"))
+  epub.createOpfFile(Paths.get(mangaPath), mangaName, "manga-downloader-0.0.1-SNAPSHOT", "en")
+  epub.createPageFile(Paths.get(mangaPath), "Hello World")
 
   /*val crawler = MangatownCrawler(mangaName)
   val chapters = crawler.getListOfChapters

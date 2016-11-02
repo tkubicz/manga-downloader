@@ -7,7 +7,7 @@ import scala.util.{Failure, Success, Try}
 object FileUtils {
 
   def createDirectory(path: String): Either[Path, Throwable] =
-    Try(Files.createDirectory(Paths.get(path))) match {
+    Try(Files.createDirectories(Paths.get(path))) match {
       case Success(p) => Left(p)
       case Failure(e) => Right(e)
     }
