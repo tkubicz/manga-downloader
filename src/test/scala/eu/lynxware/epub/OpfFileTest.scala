@@ -2,26 +2,48 @@ package eu.lynxware.epub
 
 import org.scalatest.{FunSuite, GivenWhenThen, Matchers}
 
-import scala.xml.PrettyPrinter
-
 class OpfFileTest extends FunSuite with Matchers with GivenWhenThen {
   test("Creating Opf file using builder") {
+    Given("empty OpfFile")
     val opf = OpfFile()
-      .withFileName("test.opf")
-      .withTitle("Test Title")
-      .withCreator("manga-downloader")
-      .withManifestItem("xhtml/test1.xhtml", "tt1", "application/xhtml+xml", Some(OpfManifestItemProperty.Nav))
-      .withManifestItem(OpfManifestItem("xhtml/test2.xhtml", "tt2", "application/xhtml+xml", None))
-      .withManifestItem(OpfManifestItem("xhtml/test3.xhtml", "tt3", "application/xhtml+xml", None))
-      .withSpineItem(OpfSpineItem("tt1"))
-      .withSpineItem(OpfSpineItem("tt2"))
-      .withSpineItem(OpfSpineItem("tt3"))
 
-    println(opf)
+    When("builder is used")
+    val fileName = "test.opf"
+    val title = "Test Title"
+    val creator = "manga-downloader"
+    val manifestItems = Seq(
+      OpfManifestItem("xhtml/test1.xhtml", "tt1", "application/xhtml+xml", Some(OpfManifestItemProperty.Nav)),
+      OpfManifestItem("xhtml/test2.xhtml", "tt2", "application/xhtml+xml", None),
+      OpfManifestItem("xhtml/test3.xhtml", "tt3", "application/xhtml+xml", None)
+    )
+    val manifestItem = OpfManifestItem("xhtml/test4.xhtml", "tt4", "application/xhtml+xml", Some(OpfManifestItemProperty.CoverImage))
+    val spineItems = Seq(OpfSpineItem("tt1"), OpfSpineItem("tt2"), OpfSpineItem("tt3"))
 
+    val newOpf = opf
+      .withFileName(fileName)
+      .withTitle(title)
+      .withCreator(creator)
+      .withManifestItems(manifestItems)
+      .withManifestItem(manifestItem)
+      .withSpineItems(spineItems)
+
+    Then("OpfFile is builded")
+    newOpf should have(
+      'fileName (fileName),
+      'manifestItems (manifestItems :+ manifestItem),
+      'spineItems (spineItems)
+    )
+    newOpf.metadata should have(
+      'title (title),
+      'creator (creator)
+    )
+  }
+
+  test("Converting OpfFile to xml") {
+    /*println(opf)
     val xmlNodes = opf.toXml
     val pp = new PrettyPrinter(120, 2)
-    println(pp.formatNodes(xmlNodes))
+    println(pp.formatNodes(xmlNodes))*/
   }
 
   test("Converting OpfManifestItem to XML element without properties") {
