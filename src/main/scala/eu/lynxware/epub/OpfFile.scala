@@ -4,21 +4,52 @@ import java.util.UUID
 
 import eu.lynxware.epub.OpfManifestItemProperty.OpfManifestItemProperty
 
+import scala.xml._
+
 object OpfManifestItemProperty extends Enumeration {
   type OpfManifestItemProperty = Value
-  val NAV = Value("nav")
-  val COVER_IMAGE = Value("cover-image")
+  val Nav = Value("nav")
+  val CoverImage = Value("cover-image")
 }
 
-case class OpfMetadata(author: String = "unknown",
-                       title: String = "unknown",
+case class OpfMetadata(title: String = "unknown",
                        creator: String = "unknown",
+                       publisher: String = "unknown",
+                       modified: String = "2000-03-24T00:00:00Z",
                        language: String = "en",
-                       uuid: UUID = UUID.randomUUID())
+                       uuid: UUID = UUID.randomUUID()) {
+  def toXml(): Elem = {
+    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+      <dc:identifier id="pub-id">urn:uuid:{uuid}</dc:identifier>
+      <meta refines="#pub-id" property="identifier-type" scheme="xsd:string">uuid</meta>
+      <dc:title>{title}</dc:title>
+      <dc:creator>{creator}</dc:creator>
+      <dc:language>{language}</dc:language>
+      <meta property="dcterms:modified">{modified}</meta>
+    </metadata>
+  }
+}
 
-case class OpfManifestItem(href: String, id: String, mediaType: String, property: Option[OpfManifestItemProperty])
+case class OpfManifestItem(href: String, id: String, mediaType: String, property: Option[OpfManifestItemProperty] = None) {
 
-case class OpfSpineItem(idref: String, linear: String)
+  def toXml(): Elem = {
+      val elem = <item href={href} id={id} media-type={mediaType} />
+      property match {
+        case Some(p) => elem % Attribute(None, "properties", Text(p.toString), Null)
+        case None => elem
+      }
+  }
+}
+
+case class OpfSpineItem(idref: String, linear: Option[String] = None) {
+  def toXml(): Elem = {
+    val elem = <itemref idref={idref} />
+    linear match {
+      case Some(l) => elem % Attribute(None, "linear", Text(l), Null)
+      case None => elem
+    }
+  }
+}
 
 case class OpfFile(fileName: String = "package.opf", metadata: OpfMetadata = OpfMetadata(), manifestItems: Seq[OpfManifestItem] = Seq(), spineItems: Seq[OpfSpineItem] = Seq()) {
   def withFileName(newFileName: String): OpfFile = copy(fileName = newFileName)
@@ -36,17 +67,27 @@ case class OpfFile(fileName: String = "package.opf", metadata: OpfMetadata = Opf
 
   def withSpineItem(spineItem: OpfSpineItem): OpfFile = copy(spineItems = spineItems :+ spineItem)
 
-  def withSpineItem(idref: String, linear: String): OpfFile =
+  def withSpineItem(idref: String, linear: Option[String]): OpfFile =
     copy(spineItems = spineItems :+ new OpfSpineItem(idref, linear))
 
-  def withAuthor(newAuthor: String): OpfFile = copy(metadata = metadata.copy(author = newAuthor))
-
   def withTitle(newTitle: String): OpfFile = copy(metadata = metadata.copy(title = newTitle))
+
+  def withPublisher(newPublisher: String): OpfFile = copy(metadata = metadata.copy(publisher = newPublisher))
+
+  def withModified(newModified: String): OpfFile = copy(metadata = metadata.copy(modified = newModified))
 
   def withCreator(newCreator: String): OpfFile = copy(metadata = metadata.copy(creator = newCreator))
 
   def withLanguage(newLanguage: String): OpfFile = copy(metadata = metadata.copy(language = newLanguage))
 
   def withUUID(newUUID: UUID): OpfFile = copy(metadata = metadata.copy(uuid = newUUID))
+
+  def toXml(): Seq[Node] = {
+    val metaXml = metadata.toXml
+    val manifestXml = <manifest>{manifestItems.map(_.toXml)}</manifest>
+    val spineXml = <spine>{spineItems.map(_.toXml)}</spine>
+    val result = <package version="3.0" xml:lang="en" xmlns="http://www.idpf.org/2007/opf" unique-identifier="pub-id">{metaXml ++ manifestXml ++ spineXml}</package>
+    result
+  }
 }
 
