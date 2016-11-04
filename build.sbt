@@ -1,11 +1,11 @@
 name := "manga-downloader"
 organization := "eu.lynxware"
 version := "0.0.1-SNAPSHOT"
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.0"
 
 lazy val slf4jVersion = "1.7.21"
 lazy val logbackVersion = "1.1.7"
-lazy val scalaLoggingVersion = "3.4.0"
+lazy val scalaLoggingVersion = "3.5.0"
 lazy val scalatestVersion = "3.0.0"
 lazy val scalaXmlVersion = "1.0.6"
 
