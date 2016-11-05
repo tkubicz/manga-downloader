@@ -1,8 +1,8 @@
-package eu.lynxware.epub
+package eu.lynxware.epub.file
 
 import org.scalatest.{FunSuite, GivenWhenThen, Matchers}
 
-class OpfFileTest extends FunSuite with Matchers with GivenWhenThen {
+class OpfFileSpec extends FunSuite with Matchers with GivenWhenThen {
   test("Creating Opf file using builder") {
     Given("empty OpfFile")
     val opf = OpfFile()

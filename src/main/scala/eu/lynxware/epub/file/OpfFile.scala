@@ -1,8 +1,8 @@
-package eu.lynxware.epub
+package eu.lynxware.epub.file
 
 import java.util.UUID
 
-import eu.lynxware.epub.OpfManifestItemProperty.OpfManifestItemProperty
+import eu.lynxware.epub.file.OpfManifestItemProperty.OpfManifestItemProperty
 
 import scala.xml._
 

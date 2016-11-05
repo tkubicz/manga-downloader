@@ -15,11 +15,11 @@ class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
     val path = s"${tmp}${separator}test_dir"
 
     When("directory is created")
-    val result = FileUtils.createDirectory(path)
+    val result = FileUtils.createDirectory(Paths.get(path))
 
     Then("result should be path to the new directory")
-    result shouldEqual Left(Paths.get(path))
-    Files.delete(result.left.get)
+    result shouldEqual Right(Paths.get(path))
+    Files.delete(result.right.get)
   }
 
   test("Failure while creating directory") {
@@ -27,9 +27,9 @@ class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
     val path = "/opt/test_dir"
 
     When("trying to create directory")
-    val result = FileUtils.createDirectory("/opt/test_dir")
+    val result = FileUtils.createDirectory(Paths.get("/opt/test_dir"))
 
     Then("result should be exception")
-    result shouldEqual Right(_: IOException)
+    result shouldEqual Left(_: IOException)
   }
 }

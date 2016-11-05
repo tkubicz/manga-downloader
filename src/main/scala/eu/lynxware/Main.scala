@@ -22,10 +22,13 @@ object Main extends App with LazyLogging {
   val mangaPath = "/home/tku/Pobrane/berserk/"
 
   val epub = new Epub
-  epub.createMimetypeFile(Paths.get(mangaPath))
+  epub.createFolderStructure(Paths.get(mangaPath).resolve("test"))
+  epub.packToZip(Paths.get(mangaPath).resolve("c001"), Paths.get(mangaPath).resolve("test.epub"))
+
+  /*epub.createMimetypeFile(Paths.get(mangaPath))
   epub.createContainerFile(Paths.get(mangaPath).resolve("META-INF"))
   epub.createOpfFile(Paths.get(mangaPath), mangaName, "manga-downloader-0.0.1-SNAPSHOT", "en")
-  epub.createPageFile(Paths.get(mangaPath), "Hello World")
+  epub.createPageFile(Paths.get(mangaPath), "Hello World")*/
 
   /*val crawler = MangatownCrawler(mangaName)
   val chapters = crawler.getListOfChapters
