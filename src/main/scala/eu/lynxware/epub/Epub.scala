@@ -1,9 +1,6 @@
 package eu.lynxware.epub
 
-import java.io.FileOutputStream
-import java.nio.file.attribute.BasicFileAttributes
-import java.nio.file.{FileVisitResult, Files, Path, SimpleFileVisitor}
-import java.util.zip.{ZipEntry, ZipOutputStream}
+import java.nio.file.Path
 
 import eu.lynxware.epub.file.{ContainerFile, ContainerRootFile, MimetypeFile, OpfFile}
 import eu.lynxware.util.FileUtils
