@@ -1,19 +1,14 @@
 package eu.lynxware
 
-import java.io.File
 import java.nio.file.Paths
 import java.util.concurrent.Executors
 
 import com.typesafe.scalalogging.LazyLogging
-import eu.lynxware.crawler.MangatownCrawler
 import eu.lynxware.epub.Epub
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
+import scala.concurrent.ExecutionContext
 
 object Main extends App with LazyLogging {
-
-  import eu.lynxware.util.FileDownloader._
   implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(5))
 
   val chapterNamePattern = s"(c(\\d{1,4}|\\d{1,4}.\\d{1,4}))".r
@@ -21,9 +16,16 @@ object Main extends App with LazyLogging {
   val mangaName = "berserk"
   val mangaPath = "/home/tku/Pobrane/berserk/"
 
-  val epub = new Epub
-  epub.createFolderStructure(Paths.get(mangaPath).resolve("test"))
-  epub.packToZip(Paths.get(mangaPath).resolve("c001"), Paths.get(mangaPath).resolve("test.epub"))
+  val epub = new Epub()
+    .addImage(Paths.get(mangaPath).resolve("c001/1.html.jpg"), "c001_1")
+    .addImage(Paths.get(mangaPath).resolve("c001/2.html.jpg"), "c001_2")
+    .addImage(Paths.get(mangaPath).resolve("c001/3.html.jpg"), "c001_3")
+
+  epub.write(null)
+
+
+  //epub.createFolderStructure(Paths.get(mangaPath).resolve("test"))
+  //epub.packToZip(Paths.get(mangaPath).resolve("c001"), Paths.get(mangaPath).resolve("test.epub"))
 
   /*epub.createMimetypeFile(Paths.get(mangaPath))
   epub.createContainerFile(Paths.get(mangaPath).resolve("META-INF"))

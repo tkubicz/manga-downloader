@@ -2,6 +2,7 @@ package eu.lynxware.epub.file
 
 import java.util.UUID
 
+import eu.lynxware.epub.file.OpfManifestItemMediaType.OpfManifestItemMediaType
 import eu.lynxware.epub.file.OpfManifestItemProperty.OpfManifestItemProperty
 
 import scala.xml._
@@ -10,6 +11,13 @@ object OpfManifestItemProperty extends Enumeration {
   type OpfManifestItemProperty = Value
   val Nav = Value("nav")
   val CoverImage = Value("cover-image")
+}
+
+object OpfManifestItemMediaType extends Enumeration {
+  type OpfManifestItemMediaType = Value
+  val ApplicationXhtmlXml = Value("application/xhtml+xml")
+  val TextCss = Value("text/css")
+  val ImageJpeg = Value("image/jpeg")
 }
 
 case class OpfMetadata(title: String = "unknown",
@@ -30,10 +38,10 @@ case class OpfMetadata(title: String = "unknown",
   }
 }
 
-case class OpfManifestItem(href: String, id: String, mediaType: String, property: Option[OpfManifestItemProperty] = None) {
+case class OpfManifestItem(href: String, id: String, mediaType: OpfManifestItemMediaType, property: Option[OpfManifestItemProperty] = None) {
 
   def toXml(): Elem = {
-      val elem = <item href={href} id={id} media-type={mediaType} />
+      val elem = <item href={href} id={id} media-type={mediaType.toString} />
       property match {
         case Some(p) => elem % Attribute(None, "properties", Text(p.toString), Null)
         case None => elem
@@ -62,7 +70,7 @@ case class OpfFile(fileName: String = "package.opf", metadata: OpfMetadata = Opf
 
   def withManifestItem(manifestItem: OpfManifestItem): OpfFile = copy(manifestItems = manifestItems :+ manifestItem)
 
-  def withManifestItem(href: String, id: String, mediaType: String, property: Option[OpfManifestItemProperty]): OpfFile =
+  def withManifestItem(href: String, id: String, mediaType: OpfManifestItemMediaType, property: Option[OpfManifestItemProperty]): OpfFile =
     copy(manifestItems = manifestItems :+ new OpfManifestItem(href, id, mediaType, property))
 
   def withSpineItem(spineItem: OpfSpineItem): OpfFile = copy(spineItems = spineItems :+ spineItem)

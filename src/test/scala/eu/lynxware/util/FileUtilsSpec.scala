@@ -10,6 +10,21 @@ class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
   val tmp = System.getProperty("java.io.tmpdir")
   val separator = File.separator
 
+  test("Get tmp folder") {
+    When("getTmpFolder() function is executed")
+    val tmpFolder = FileUtils.getTmpFolder()
+
+    Then("tmp folder is /tmp")
+    tmpFolder.toString should equal("/tmp")
+  }
+
+  test("Get random tmp folder") {
+    When("random tmp folder is requested")
+    val tmpFolder = FileUtils.getRandomTmpFolder()
+
+    println(tmpFolder.toString)
+  }
+
   test("Create new directory") {
     Given("path where directory doesn't exist")
     val path = s"${tmp}${separator}test_dir"
@@ -32,4 +47,6 @@ class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
     Then("result should be exception")
     result shouldEqual Left(_: IOException)
   }
+
+
 }
