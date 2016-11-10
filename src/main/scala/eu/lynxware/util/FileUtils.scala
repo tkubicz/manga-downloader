@@ -79,6 +79,18 @@ object FileUtils {
     }
   }
 
+  def packSingleFileToZip(input: Path, output: Path): Unit = {
+    val fos = newFileOutputStream(output)
+    val zos = new ZipOutputStream(fos)
+    zos.setLevel(0)
+    try {
+      zos.putNextEntry(new ZipEntry(input.getFileName.toString))
+      Files.copy(input, zos)
+      zos.closeEntry()
+    }
+    zos.close()
+  }
+
   def copy(in: Path, out: Path): Unit = {
     val fis = newFileInputStream(in)
     val fos = newFileOutputStream(out)
