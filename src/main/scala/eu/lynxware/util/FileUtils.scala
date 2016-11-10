@@ -15,7 +15,7 @@ object FileUtils {
 
   private val tmp = System.getProperty("java.io.tmpdir")
 
-  private val xmlEncoding = """<?xml version="1.0" encoding="UTF-8"?>\n"""
+  private val xmlEncoding = """<?xml version="1.0" encoding="UTF-8"?>"""
 
   def getTmpFolder(): Path = Paths.get(tmp)
 
@@ -38,13 +38,19 @@ object FileUtils {
     }
   }
 
-  def writeXmlToFile(path: Path, node: Node): Unit = {
-    val pp = new PrettyPrinter(120, 2)
+  def writeXmlToFile(path: Path, node: Node): Unit =
+    writeXmlToFile(path, () => {new PrettyPrinter(120, 2).format(node)})
+
+  def writeXmlToFile(path: Path, nodes: Seq[Node]): Unit =
+    writeXmlToFile(path, () => {new PrettyPrinter(120, 2).formatNodes(nodes)})
+
+  private def writeXmlToFile(path: Path, formatter: () => String): Unit = {
     val fos = newFileOutputStream(path)
     val writer = newWriter(fos)
     try {
       writer.write(xmlEncoding)
-      writer.write(pp.format(node))
+      writer.write("\n")
+      writer.write(formatter())
     } finally {
       writer.close()
     }

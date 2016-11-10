@@ -14,3 +14,7 @@ case class ContainerFile(rootFiles: Seq[ContainerRootFile] = Seq(ContainerRootFi
       </rootfiles>
     </container>
 }
+
+object ContainerFile {
+  val FileName: String = "container.xml"
+}
