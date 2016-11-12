@@ -1,13 +1,11 @@
 package eu.lynxware
 
 import java.nio.file.Paths
-import java.time.LocalDateTime
 import java.util.concurrent.Executors
 
 import com.typesafe.scalalogging.LazyLogging
-import eu.lynxware.epub.Epub
 import eu.lynxware.epub.file.OpfMetadata
-import eu.lynxware.util.FileUtils
+import eu.lynxware.epub.{Epub, EpubWriter}
 
 import scala.concurrent.ExecutionContext
 
@@ -17,7 +15,7 @@ object Main extends App with LazyLogging {
   val chapterNamePattern = s"(c(\\d{1,4}|\\d{1,4}.\\d{1,4}))".r
   val partNamePattern = s"(\\d{1,4}.html)".r
   val mangaName = "berserk"
-  val mangaPath = "/home/tku/Pobrane/berserk/"
+  val mangaPath = "/Users/tku/Downloads/"
 
   val metadata = OpfMetadata()
     .withTitle("Berserk")
@@ -30,9 +28,11 @@ object Main extends App with LazyLogging {
     .addImage(Paths.get(mangaPath).resolve("c001/2.html.jpg"), "c001_2")
     .addImage(Paths.get(mangaPath).resolve("c001/3.html.jpg"), "c001_3")
 
-  epub.write(null)
+  val epubWriter = new EpubWriter()
 
-  FileUtils.packSingleFileToZip(Paths.get("/tmp/zgijl45It5/mimetype"), Paths.get("/tmp/zgijl45It5/test2.epub"))
+  epubWriter.write(epub, null, Paths.get("/Users/tku/Downloads/test"))
+
+  //FileUtils.packSingleFileToZip(Paths.get("/tmp/zgijl45It5/mimetype"), Paths.get("/tmp/zgijl45It5/test2.epub"))
 
   /*val crawler = MangatownCrawler(mangaName)
   val chapters = crawler.getListOfChapters
