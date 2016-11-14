@@ -14,7 +14,11 @@ case class Epub(metadata: OpfMetadata = OpfMetadata(), resources: Seq[Resource] 
 
   def withMetadata(newMetadata: OpfMetadata): Epub = copy(metadata = newMetadata)
 
-  def addImage(path: Path, id: String) = {
+  def addImage(path: Path, id: String, mediaType: OpfManifestItemMediaType) = {
+    copy(resources = resources :+ Resource(path, id, mediaType))
+  }
+
+  def addJpegImage(path: Path, id: String) = {
     copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ImageJpeg))
   }
 

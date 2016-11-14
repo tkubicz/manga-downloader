@@ -11,18 +11,19 @@ class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
   val separator = File.separator
 
   test("Get tmp folder") {
-    When("getTmpFolder() function is executed")
+    When("tmp folder is requested")
     val tmpFolder = FileUtils.getTmpFolder()
 
-    Then("tmp folder is /tmp")
-    tmpFolder.toString should equal("/tmp")
+    Then("tmp folder is not null")
+    tmpFolder.toString shouldNot equal(null)
   }
 
   test("Get random tmp folder") {
     When("random tmp folder is requested")
     val tmpFolder = FileUtils.getRandomTmpFolder()
 
-    println(tmpFolder.toString)
+    Then("randomly generated folder in tmp should be returned")
+    tmpFolder.toString shouldNot equal(null)
   }
 
   test("Create new directory") {

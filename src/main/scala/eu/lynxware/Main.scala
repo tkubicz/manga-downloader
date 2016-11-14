@@ -24,9 +24,9 @@ object Main extends App with LazyLogging {
 
   val epub = new Epub()
     .withMetadata(metadata)
-    .addImage(Paths.get(mangaPath).resolve("c001/1.html.jpg"), "c001_1")
-    .addImage(Paths.get(mangaPath).resolve("c001/2.html.jpg"), "c001_2")
-    .addImage(Paths.get(mangaPath).resolve("c001/3.html.jpg"), "c001_3")
+    .addJpegImage(Paths.get(mangaPath).resolve("c001/1.html.jpg"), "c001_1")
+    .addJpegImage(Paths.get(mangaPath).resolve("c001/2.html.jpg"), "c001_2")
+    .addJpegImage(Paths.get(mangaPath).resolve("c001/3.html.jpg"), "c001_3")
 
   val epubWriter = new EpubWriter()
 
