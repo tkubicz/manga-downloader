@@ -3,7 +3,7 @@ package eu.lynxware.util
 import java.io._
 import java.nio.channels.Channels
 import java.nio.file._
-import java.nio.file.attribute.BasicFileAttributes
+import java.nio.file.attribute.{BasicFileAttributes, FileAttribute}
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import eu.lynxware.util.Helpers._
@@ -15,17 +15,21 @@ object FileUtils {
 
   private val tmp = System.getProperty("java.io.tmpdir")
 
+  private val home = System.getProperty("user.home")
+
   private val xmlEncoding = """<?xml version="1.0" encoding="UTF-8"?>"""
 
-  def getTmpFolder(): Path = Paths.get(tmp)
+  def tmpDirectory: Path = Paths.get(tmp)
 
-  def getRandomTmpFolder(): Path = Paths.get(tmp).resolve(Random.alphanumeric.take(10).mkString(""))
+  def randomTmpDirectory: Path = Paths.get(tmp).resolve(Random.alphanumeric.take(10).mkString(""))
+
+  def homeDirectory: Path = Paths.get(home)
 
   def createDirectory(path: Path): Either[IOException, Path] =
-    handling(classOf[IOException])(Files.createDirectories(path))
+    handling(classOf[IOException])({Files.deleteIfExists(path); Files.createDirectories(path)})
 
   def createFile(path: Path): Either[IOException, Path] =
-    handling(classOf[IOException])(Files.createFile(path))
+    handling(classOf[IOException])({Files.deleteIfExists(path); Files.createFile(path)})
 
   def writeContentToFile(path: Path, content: String): Unit = {
     val fos = newFileOutputStream(path)
@@ -39,10 +43,14 @@ object FileUtils {
   }
 
   def writeXmlToFile(path: Path, node: Node): Unit =
-    writeXmlToFile(path, () => {new PrettyPrinter(120, 2).format(node)})
+    writeXmlToFile(path, () => {
+      new PrettyPrinter(120, 2).format(node)
+    })
 
   def writeXmlToFile(path: Path, nodes: Seq[Node]): Unit =
-    writeXmlToFile(path, () => {new PrettyPrinter(120, 2).formatNodes(nodes)})
+    writeXmlToFile(path, () => {
+      new PrettyPrinter(120, 2).formatNodes(nodes)
+    })
 
   private def writeXmlToFile(path: Path, formatter: () => String): Unit = {
     val fos = newFileOutputStream(path)
@@ -56,9 +64,10 @@ object FileUtils {
     }
   }
 
-  def packToZip(input: Path, output: Path): Unit = {
+  def packToZip(input: Path, output: Path, compressionLevel: Int): Unit = {
     val fos = newFileOutputStream(output)
     val zos = new ZipOutputStream(fos)
+    zos.setLevel(compressionLevel)
     try {
       Files.walkFileTree(input, new SimpleFileVisitor[Path] {
         override def visitFile(file: Path, basicFileAttributes: BasicFileAttributes): FileVisitResult = {
@@ -69,7 +78,7 @@ object FileUtils {
         }
 
         override def preVisitDirectory(dir: Path, basicFileAttributes: BasicFileAttributes): FileVisitResult = {
-          zos.putNextEntry(new ZipEntry(input.relativize(dir).toString + "/"))
+          zos.putNextEntry(new ZipEntry(input.relativize(dir).toString + "/")) // TODO: Check if this works on windows
           zos.closeEntry()
           FileVisitResult.CONTINUE
         }
@@ -79,16 +88,17 @@ object FileUtils {
     }
   }
 
-  def packSingleFileToZip(input: Path, output: Path): Unit = {
+  def packSingleFileToZip(input: Path, output: Path, compressionLevel: Int): Unit = {
     val fos = newFileOutputStream(output)
     val zos = new ZipOutputStream(fos)
-    zos.setLevel(0)
+    zos.setLevel(compressionLevel)
     try {
       zos.putNextEntry(new ZipEntry(input.getFileName.toString))
       Files.copy(input, zos)
       zos.closeEntry()
+    } finally {
+      zos.close()
     }
-    zos.close()
   }
 
   def copy(in: Path, out: Path): Unit = {

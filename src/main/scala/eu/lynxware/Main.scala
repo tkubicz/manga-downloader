@@ -6,6 +6,7 @@ import java.util.concurrent.Executors
 import com.typesafe.scalalogging.LazyLogging
 import eu.lynxware.epub.file.OpfMetadata
 import eu.lynxware.epub.{Epub, EpubWriter}
+import eu.lynxware.util.FileUtils
 
 import scala.concurrent.ExecutionContext
 
@@ -29,8 +30,9 @@ object Main extends App with LazyLogging {
     .addJpegImage(Paths.get(mangaPath).resolve("c001/3.html.jpg"), "c001_3")
 
   val epubWriter = new EpubWriter()
-
-  epubWriter.write(epub, null, Paths.get("/Users/tku/Downloads/test"))
+  epubWriter.write(epub,
+    FileUtils.homeDirectory.resolve("Downloads").resolve("result.epub"),
+    FileUtils.homeDirectory.resolve("Downloads").resolve("test"))
 
   //FileUtils.packSingleFileToZip(Paths.get("/tmp/zgijl45It5/mimetype"), Paths.get("/tmp/zgijl45It5/test2.epub"))
 

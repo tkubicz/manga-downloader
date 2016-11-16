@@ -1,6 +1,5 @@
 package eu.lynxware.epub
 
-import java.io.FileOutputStream
 import java.nio.file.Path
 
 import com.typesafe.scalalogging.LazyLogging
@@ -9,18 +8,19 @@ import eu.lynxware.util.FileUtils
 
 class EpubWriter extends LazyLogging {
 
-  def write(book: Epub, fos: FileOutputStream): Unit = {
-    val tmpFolder = FileUtils.getRandomTmpFolder()
-    write(book, fos, tmpFolder)
+  def write(book: Epub, output: Path): Unit = {
+    val tmpFolder = FileUtils.randomTmpDirectory
+    write(book, output, tmpFolder)
   }
 
-  def write(book: Epub, fos: FileOutputStream, tmpFolder: Path): Unit = {
+  def write(book: Epub, output: Path, tmpFolder: Path): Unit = {
     logger.debug("Writing to tmp folder: {}", tmpFolder.toString)
     createFolderStructure(tmpFolder)
     copyResourcesToTmp(tmpFolder, book.resources)
     createMimetypeFile(tmpFolder)
     createContainerFile(tmpFolder)
     createPackageFile(tmpFolder, book.metadata)
+    packToZipFile(tmpFolder, output)
   }
 
   private def createFolderStructure(path: Path): Unit = {
@@ -58,5 +58,10 @@ class EpubWriter extends LazyLogging {
     resources.filter(_.mediaType == OpfManifestItemMediaType.ImageJpeg).foreach(r => FileUtils.copy(r.path, tmpFolder.resolve("EPUB/img/").resolve(r.path.getFileName)))
     resources.filter(_.mediaType == OpfManifestItemMediaType.TextCss).foreach(r => FileUtils.copy(r.path, tmpFolder.resolve("EPUB/css/").resolve(r.path.getFileName)))
     resources.filter(_.mediaType == OpfManifestItemMediaType.ApplicationXhtmlXml).foreach(r => FileUtils.copy(r.path, tmpFolder.resolve("EPUB/xhtml/").resolve(r.path.getFileName)))
+  }
+
+  private def packToZipFile(input: Path, output: Path): Unit = {
+    FileUtils.packSingleFileToZip(input.resolve(MimetypeFile.FileName), output, 0)
+    FileUtils.packToZip(input.resolve("META-INF"), output, 9)
   }
 }

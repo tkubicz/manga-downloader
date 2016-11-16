@@ -12,7 +12,7 @@ class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
 
   test("Get tmp folder") {
     When("tmp folder is requested")
-    val tmpFolder = FileUtils.getTmpFolder()
+    val tmpFolder = FileUtils.tmpDirectory
 
     Then("tmp folder is not null")
     tmpFolder.toString shouldNot equal(null)
@@ -20,7 +20,7 @@ class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
 
   test("Get random tmp folder") {
     When("random tmp folder is requested")
-    val tmpFolder = FileUtils.getRandomTmpFolder()
+    val tmpFolder = FileUtils.randomTmpDirectory
 
     Then("randomly generated folder in tmp should be returned")
     tmpFolder.toString shouldNot equal(null)
