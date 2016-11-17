@@ -1,0 +1,9 @@
+image: wraithbb/lynxware-scala
+
+stages:
+  - build
+  
+build:
+  stage: build
+  script:
+    - sbt clean compile test
