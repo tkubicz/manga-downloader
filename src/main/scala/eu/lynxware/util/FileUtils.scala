@@ -8,7 +8,7 @@ import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import eu.lynxware.util.Helpers._
 
-import scala.util.Random
+import scala.util.{Random, Try}
 import scala.xml.{Node, PrettyPrinter}
 
 object FileUtils {
@@ -104,7 +104,8 @@ object FileUtils {
   def copy(in: Path, out: Path): Unit = {
     val fis = newFileInputStream(in)
     val fos = newFileOutputStream(out)
-    copy(fis, fos)
+    Try(Files.copy(fis, out, StandardCopyOption.REPLACE_EXISTING)).recover{case e => println("Error while copping")}
+    //copy(fis, fos)
   }
 
   def copy(in: InputStream, out: OutputStream): Unit = {
