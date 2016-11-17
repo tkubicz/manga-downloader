@@ -25,24 +25,4 @@ case class Epub(metadata: OpfMetadata = OpfMetadata(), resources: Seq[Resource] 
   def addSection(path: Path, id: String) = {
     copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ApplicationXhtmlXml))
   }
-
-
-  def createPageFile(path: Path, title: String): Unit = {
-    val filepath = FileUtils.createFile(path.resolve("titlepage.xhtml")).left.get
-    val content = <html xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <meta charset="utf-8"/>
-        <title>
-          {title}
-        </title>
-      </head>
-      <body>
-        <h1 class="titlepage">
-          {title}
-        </h1>
-        <p>Hello world!</p>
-      </body>
-    </html>
-    //writeXmlToFile(content, filepath)
-  }
 }

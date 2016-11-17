@@ -1,7 +1,7 @@
 package eu.lynxware.epub
 
-import java.io.FileOutputStream
-import java.nio.file.{Files, Path}
+import java.io.{ByteArrayOutputStream, FileOutputStream}
+import java.nio.file.Path
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import com.typesafe.scalalogging.LazyLogging
@@ -16,13 +16,13 @@ class EpubWriter extends LazyLogging {
   }
 
   def write(book: Epub, output: Path, tmpFolder: Path): Unit = {
-    logger.debug("Writing to tmp folder: {}", tmpFolder.toString)
-    createFolderStructure(tmpFolder)
-    copyResourcesToTmp(tmpFolder, book.resources)
-    createMimetypeFile(tmpFolder)
-    createContainerFile(tmpFolder)
-    createPackageFile(tmpFolder, book.metadata)
-    packToZipFile(tmpFolder, output)
+    //logger.debug("Writing to tmp folder: {}", tmpFolder.toString)
+    //createFolderStructure(tmpFolder)
+    //copyResourcesToTmp(tmpFolder, book.resources)
+    //createMimetypeFile(tmpFolder)
+    //createContainerFile(tmpFolder)
+    //createPackageFile(tmpFolder, book.metadata)
+    packToZipFile(book, output)
   }
 
   private def createFolderStructure(path: Path): Unit = {
@@ -39,6 +39,13 @@ class EpubWriter extends LazyLogging {
       case Right(path) => FileUtils.writeContentToFile(path, MimetypeFile().content.toString)
       case Left(e) => logger.error("", e)
     }
+  }
+
+  private def createBinaryMimetype(): ByteArrayOutputStream = {
+    val bytes = MimetypeFile().content.getBytes()
+    val stream = new ByteArrayOutputStream(bytes.size)
+    stream.write(bytes)
+    stream
   }
 
   private def createContainerFile(tmpFolder: Path): Unit = {
@@ -62,22 +69,39 @@ class EpubWriter extends LazyLogging {
     resources.filter(_.mediaType == OpfManifestItemMediaType.ApplicationXhtmlXml).foreach(r => FileUtils.copy(r.path, tmpFolder.resolve("EPUB/xhtml/").resolve(r.path.getFileName)))
   }
 
-  private def packToZipFile(input: Path, output: Path): Unit = {
+  private def packToZipFile(book: Epub, output: Path): Unit = {
     val fos = new FileOutputStream(output.toFile)
     val zos = new ZipOutputStream(fos)
 
     zos.setLevel(0)
     zos.putNextEntry(new ZipEntry(MimetypeFile.FileName))
-    Files.copy(input.resolve(MimetypeFile.FileName), zos)
+    zos.write(MimetypeFile().content.getBytes)
     zos.closeEntry()
 
     zos.setLevel(9)
     zos.putNextEntry(new ZipEntry(s"META-INF/${ContainerFile.FileName}"))
-    Files.copy(input.resolve("META-INF").resolve(ContainerFile.FileName), zos)
+    zos.write(ContainerFile().toXml().toString.getBytes)
     zos.closeEntry()
 
+    val images = book.resources
+      .filter(_.mediaType == OpfManifestItemMediaType.ImageJpeg)
+      .map(r => OpfManifestItem("EPUB/img/" + r.path.getFileName.toString, r.id, r.mediaType))
+
+    val csses = book.resources
+      .filter(_.mediaType == OpfManifestItemMediaType.TextCss)
+      .map(r => OpfManifestItem("EPUB/css/" + r.path.getFileName.toString, r.id, r.mediaType))
+
+    val content = book.resources
+      .filter(_.mediaType == OpfManifestItemMediaType.ApplicationXhtmlXml)
+      .map(r => OpfManifestItem("EPUB/xhtml/" + r.path.getFileName.toString, r.id, r.mediaType))
+
+    val manifestItems = images ++ csses ++ content
+    val opfFile = OpfFile()
+      .withMetadata(book.metadata)
+      .withManifestItems(manifestItems)
+
     zos.putNextEntry(new ZipEntry("EPUB/package.opf"))
-    Files.copy(input.resolve("EPUB").resolve("package.opf"), zos)
+    zos.write(opfFile.toXml().toString.getBytes)
     zos.closeEntry()
 
     zos.close()

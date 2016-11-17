@@ -130,12 +130,8 @@ case class OpfFile(fileName: String = "package.opf", metadata: OpfMetadata = Opf
 
   def toXml(): Seq[Node] = {
     val metaXml = metadata.toXml
-    val manifestXml = <manifest>
-      {manifestItems.map(_.toXml)}
-    </manifest>
-    val spineXml = <spine>
-      {spineItems.map(_.toXml)}
-    </spine>
+    val manifestXml = <manifest>{manifestItems.map(_.toXml)}</manifest>
+    val spineXml = <spine>{spineItems.map(_.toXml)}</spine>
     val result = <package version="3.0" xml:lang="en" xmlns="http://www.idpf.org/2007/opf" unique-identifier="pub-id">
       <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
         {metaXml}
