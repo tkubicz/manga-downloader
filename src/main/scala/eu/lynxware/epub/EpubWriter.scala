@@ -1,6 +1,8 @@
 package eu.lynxware.epub
 
-import java.nio.file.Path
+import java.io.FileOutputStream
+import java.nio.file.{Files, Path}
+import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.lynxware.epub.file._
@@ -61,7 +63,23 @@ class EpubWriter extends LazyLogging {
   }
 
   private def packToZipFile(input: Path, output: Path): Unit = {
-    FileUtils.packSingleFileToZip(input.resolve(MimetypeFile.FileName), output, 0)
-    FileUtils.packToZip(input.resolve("META-INF"), output, 9)
+    val fos = new FileOutputStream(output.toFile)
+    val zos = new ZipOutputStream(fos)
+
+    zos.setLevel(0)
+    zos.putNextEntry(new ZipEntry(MimetypeFile.FileName))
+    Files.copy(input.resolve(MimetypeFile.FileName), zos)
+    zos.closeEntry()
+
+    zos.setLevel(9)
+    zos.putNextEntry(new ZipEntry(s"META-INF/${ContainerFile.FileName}"))
+    Files.copy(input.resolve("META-INF").resolve(ContainerFile.FileName), zos)
+    zos.closeEntry()
+
+    zos.putNextEntry(new ZipEntry("EPUB/package.opf"))
+    Files.copy(input.resolve("EPUB").resolve("package.opf"), zos)
+    zos.closeEntry()
+
+    zos.close()
   }
 }
