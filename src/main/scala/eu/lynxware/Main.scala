@@ -34,9 +34,7 @@ object Main extends App with LazyLogging {
     .addJpegImage(mangaPath.resolve("c001/3.html.jpg"), "c001_3")
 
   val epubWriter = new EpubWriter()
-  epubWriter.write(epub,
-    FileUtils.homeDirectory.resolve("Pobrane").resolve("result.epub"),
-    FileUtils.homeDirectory.resolve("Pobrane").resolve("test"))
+  epubWriter.write(epub, FileUtils.homeDirectory.resolve("Pobrane").resolve("result.epub"))
 
   def downloadManga(mangaName: String): Unit = {
     val crawler = MangatownCrawler(mangaName)
