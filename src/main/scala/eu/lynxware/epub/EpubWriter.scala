@@ -1,12 +1,14 @@
 package eu.lynxware.epub
 
 import java.io.{ByteArrayOutputStream, FileOutputStream}
-import java.nio.file.Path
+import java.nio.file.{Files, Path}
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.lynxware.epub.file._
 import eu.lynxware.util.FileUtils
+
+import scala.xml.PrettyPrinter
 
 class EpubWriter extends LazyLogging {
 
@@ -85,7 +87,15 @@ class EpubWriter extends LazyLogging {
 
     val images = book.resources
       .filter(_.mediaType == OpfManifestItemMediaType.ImageJpeg)
-      .map(r => OpfManifestItem("EPUB/img/" + r.path.getFileName.toString, r.id, r.mediaType))
+      .map(r => OpfManifestItem("img/" + r.path.getFileName.toString, r.id, r.mediaType))
+
+    book.resources
+      .filter(_.mediaType == OpfManifestItemMediaType.ImageJpeg)
+      .foreach { img =>
+        zos.putNextEntry(new ZipEntry(s"EPUB/img/" + img.path.getFileName.toString))
+        Files.copy(img.path, zos)
+        zos.closeEntry()
+      }
 
     val csses = book.resources
       .filter(_.mediaType == OpfManifestItemMediaType.TextCss)
@@ -100,8 +110,10 @@ class EpubWriter extends LazyLogging {
       .withMetadata(book.metadata)
       .withManifestItems(manifestItems)
 
+    val pp = new PrettyPrinter(120, 2)
+
     zos.putNextEntry(new ZipEntry("EPUB/package.opf"))
-    zos.write(opfFile.toXml().toString.getBytes)
+    zos.write(pp.formatNodes(opfFile.toXml()).getBytes)
     zos.closeEntry()
 
     zos.close()

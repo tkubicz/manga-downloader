@@ -2,6 +2,8 @@ package eu.lynxware.epub.file
 
 import org.scalatest.{FunSuite, GivenWhenThen, Matchers}
 
+import scala.xml.PrettyPrinter
+
 class OpfFileSpec extends FunSuite with Matchers with GivenWhenThen {
   test("Creating Opf file using builder") {
     Given("empty OpfFile")
@@ -37,13 +39,10 @@ class OpfFileSpec extends FunSuite with Matchers with GivenWhenThen {
       'title (title),
       'creator (creator)
     )
-  }
 
-  test("Converting OpfFile to xml") {
-    /*println(opf)
-    val xmlNodes = opf.toXml
+    val xmlNodes = newOpf.toXml()
     val pp = new PrettyPrinter(120, 2)
-    println(pp.formatNodes(xmlNodes))*/
+    println(pp.formatNodes(xmlNodes))
   }
 
   test("Converting OpfManifestItem to XML element without properties") {

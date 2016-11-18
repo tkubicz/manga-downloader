@@ -1,6 +1,7 @@
 package eu.lynxware
 
 import java.io.File
+import java.nio.file.Paths
 import java.util.concurrent.Executors
 
 import com.typesafe.scalalogging.LazyLogging
@@ -19,7 +20,7 @@ object Main extends App with LazyLogging {
   val partNamePattern = s"(\\d{1,4}.html)".r
   val mangaName = "berserk"
   //val mangaPath = "/Users/tku/Downloads/berserk/"
-  val mangaPath = FileUtils.homeDirectory.resolve("Downloads").resolve("berserk")
+  val mangaPath = FileUtils.homeDirectory.resolve("Pobrane").resolve("berserk")
 
   val metadata = OpfMetadata()
     .withTitle("Berserk")
@@ -28,14 +29,14 @@ object Main extends App with LazyLogging {
 
   val epub = new Epub()
     .withMetadata(metadata)
-  //.addJpegImage(Paths.get(mangaPath).resolve("c001/1.html.jpg"), "c001_1")
-  //.addJpegImage(Paths.get(mangaPath).resolve("c001/2.html.jpg"), "c001_2")
-  //.addJpegImage(Paths.get(mangaPath).resolve("c001/3.html.jpg"), "c001_3")
+    .addJpegImage(mangaPath.resolve("c001/1.html.jpg"), "c001_1")
+    .addJpegImage(mangaPath.resolve("c001/2.html.jpg"), "c001_2")
+    .addJpegImage(mangaPath.resolve("c001/3.html.jpg"), "c001_3")
 
   val epubWriter = new EpubWriter()
   epubWriter.write(epub,
-    FileUtils.homeDirectory.resolve("Downloads").resolve("result.epub"),
-    FileUtils.homeDirectory.resolve("Downloads").resolve("test"))
+    FileUtils.homeDirectory.resolve("Pobrane").resolve("result.epub"),
+    FileUtils.homeDirectory.resolve("Pobrane").resolve("test"))
 
   def downloadManga(mangaName: String): Unit = {
     val crawler = MangatownCrawler(mangaName)
