@@ -45,14 +45,26 @@ class EpubWriter extends LazyLogging {
       .filter(_.mediaType == OpfManifestItemMediaType.TextCss)
       .map(r => OpfManifestItem("EPUB/css/" + r.path.getFileName.toString, r.id, r.mediaType))
 
+    book.resources
+      .filter(_.mediaType == OpfManifestItemMediaType.ApplicationXhtmlXml)
+      .foreach { content =>
+        zos.putNextEntry(new ZipEntry(s"EPUB/xhtml/" + content.path.getFileName.toString))
+        Files.copy(content.path, zos)
+        zos.closeEntry()
+      }
+
     val content = book.resources
       .filter(_.mediaType == OpfManifestItemMediaType.ApplicationXhtmlXml)
-      .map(r => OpfManifestItem("EPUB/xhtml/" + r.path.getFileName.toString, r.id, r.mediaType))
+      .map(r => OpfManifestItem("xhtml/" + r.path.getFileName.toString, r.id, r.mediaType, r.property))
+
+    // Spine items
+    val spineItems = book.resources.filter(_.isSpine).map(r => OpfSpineItem(r.id, None))
 
     val manifestItems = images ++ csses ++ content
     val opfFile = OpfFile()
       .withMetadata(book.metadata)
       .withManifestItems(manifestItems)
+      .withSpineItems(spineItems)
 
     val pp = new PrettyPrinter(120, 2)
 

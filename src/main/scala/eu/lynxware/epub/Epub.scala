@@ -1,14 +1,13 @@
 package eu.lynxware.epub
 
-import java.io.FileOutputStream
 import java.nio.file.Path
 
 import com.typesafe.scalalogging.LazyLogging
 import eu.lynxware.epub.file.OpfManifestItemMediaType.OpfManifestItemMediaType
+import eu.lynxware.epub.file.OpfManifestItemProperty.OpfManifestItemProperty
 import eu.lynxware.epub.file._
-import eu.lynxware.util.FileUtils
 
-case class Resource(path: Path, id: String, mediaType: OpfManifestItemMediaType)
+case class Resource(path: Path, id: String, mediaType: OpfManifestItemMediaType, isSpine: Boolean = false, property: Option[OpfManifestItemProperty] = None)
 
 case class Epub(metadata: OpfMetadata = OpfMetadata(), resources: Seq[Resource] = Seq()) extends LazyLogging {
 
@@ -22,7 +21,7 @@ case class Epub(metadata: OpfMetadata = OpfMetadata(), resources: Seq[Resource] 
     copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.TextCss))
   }
 
-  def addSection(path: Path, id: String) = {
-    copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ApplicationXhtmlXml))
+  def addSection(path: Path, id: String, isSpine: Boolean = false, property: Option[OpfManifestItemProperty] = None) = {
+    copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ApplicationXhtmlXml, isSpine, property))
   }
 }

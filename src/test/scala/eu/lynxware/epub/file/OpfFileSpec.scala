@@ -13,26 +13,25 @@ class OpfFileSpec extends FunSuite with Matchers with GivenWhenThen {
     val fileName = "test.opf"
     val title = "Test Title"
     val creator = "manga-downloader"
+
+    val metadata = OpfMetadata().withTitle(title).withCreator(creator)
     val manifestItems = Seq(
       OpfManifestItem("xhtml/test1.xhtml", "tt1", OpfManifestItemMediaType.ApplicationXhtmlXml, Some(OpfManifestItemProperty.Nav)),
       OpfManifestItem("xhtml/test2.xhtml", "tt2", OpfManifestItemMediaType.ApplicationXhtmlXml, None),
       OpfManifestItem("xhtml/test3.xhtml", "tt3", OpfManifestItemMediaType.ApplicationXhtmlXml, None)
     )
-    val manifestItem = OpfManifestItem("xhtml/test4.xhtml", "tt4", OpfManifestItemMediaType.ApplicationXhtmlXml, Some(OpfManifestItemProperty.CoverImage))
     val spineItems = Seq(OpfSpineItem("tt1"), OpfSpineItem("tt2"), OpfSpineItem("tt3"))
 
     val newOpf = opf
       .withFileName(fileName)
-      .withTitle(title)
-      .withCreator(creator)
+      .withMetadata(metadata)
       .withManifestItems(manifestItems)
-      .withManifestItem(manifestItem)
       .withSpineItems(spineItems)
 
     Then("OpfFile is builded")
     newOpf should have(
       'fileName (fileName),
-      'manifestItems (manifestItems :+ manifestItem),
+      'manifestItems (manifestItems),
       'spineItems (spineItems)
     )
     newOpf.metadata should have(

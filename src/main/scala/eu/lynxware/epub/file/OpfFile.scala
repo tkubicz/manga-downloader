@@ -77,7 +77,6 @@ object OpfMetadata {
 }
 
 case class OpfManifestItem(href: String, id: String, mediaType: OpfManifestItemMediaType, property: Option[OpfManifestItemProperty] = None) {
-
   def toXml(): Elem = {
     val elem = <item href={href} id={id} media-type={mediaType.toString}/>
     property match {
@@ -97,7 +96,10 @@ case class OpfSpineItem(idref: String, linear: Option[String] = None) {
   }
 }
 
-case class OpfFile(fileName: String = "package.opf", metadata: OpfMetadata = OpfMetadata(), manifestItems: Seq[OpfManifestItem] = Seq(), spineItems: Seq[OpfSpineItem] = Seq()) {
+case class OpfFile(fileName: String = "package.opf",
+                   metadata: OpfMetadata = OpfMetadata(),
+                   manifestItems: Seq[OpfManifestItem] = Seq(),
+                   spineItems: Seq[OpfSpineItem] = Seq()) {
   def withFileName(newFileName: String): OpfFile = copy(fileName = newFileName)
 
   def withMetadata(newMetadata: OpfMetadata): OpfFile = copy(metadata = newMetadata)
@@ -105,28 +107,6 @@ case class OpfFile(fileName: String = "package.opf", metadata: OpfMetadata = Opf
   def withManifestItems(newManifestItems: Seq[OpfManifestItem]): OpfFile = copy(manifestItems = newManifestItems)
 
   def withSpineItems(newSpineItems: Seq[OpfSpineItem]): OpfFile = copy(spineItems = newSpineItems)
-
-  def withManifestItem(manifestItem: OpfManifestItem): OpfFile = copy(manifestItems = manifestItems :+ manifestItem)
-
-  def withManifestItem(href: String, id: String, mediaType: OpfManifestItemMediaType, property: Option[OpfManifestItemProperty]): OpfFile =
-    copy(manifestItems = manifestItems :+ new OpfManifestItem(href, id, mediaType, property))
-
-  def withSpineItem(spineItem: OpfSpineItem): OpfFile = copy(spineItems = spineItems :+ spineItem)
-
-  def withSpineItem(idref: String, linear: Option[String]): OpfFile =
-    copy(spineItems = spineItems :+ new OpfSpineItem(idref, linear))
-
-  def withTitle(newTitle: String): OpfFile = copy(metadata = metadata.copy(title = newTitle))
-
-  def withPublisher(newPublisher: String): OpfFile = copy(metadata = metadata.copy(publisher = newPublisher))
-
-  def withModified(newModified: LocalDateTime): OpfFile = copy(metadata = metadata.copy(modified = newModified))
-
-  def withCreator(newCreator: String): OpfFile = copy(metadata = metadata.copy(creator = newCreator))
-
-  def withLanguage(newLanguage: String): OpfFile = copy(metadata = metadata.copy(language = newLanguage))
-
-  def withUUID(newUUID: UUID): OpfFile = copy(metadata = metadata.copy(uuid = newUUID))
 
   def toXml(): Seq[Node] = {
     val metaXml = metadata.toXml
