@@ -3,17 +3,11 @@ organization := "eu.lynxware"
 version := "0.0.1-SNAPSHOT"
 scalaVersion := "2.12.0"
 
-lazy val slf4jVersion = "1.7.21"
-lazy val logbackVersion = "1.1.7"
-lazy val scalaLoggingVersion = "3.5.0"
-lazy val scalatestVersion = "3.0.0"
-lazy val scalaXmlVersion = "1.0.6"
-
 libraryDependencies ++= Seq(
-  "org.slf4j" % "slf4j-api" % slf4jVersion,
-  "ch.qos.logback" % "logback-classic" % logbackVersion,
-  "com.typesafe.scala-logging" %% "scala-logging" % scalaLoggingVersion,
-  "org.scala-lang.modules" %% "scala-xml" % scalaXmlVersion,
+  "org.slf4j" % "slf4j-api" % "1.7.21",
+  "ch.qos.logback" % "logback-classic" % "1.1.7",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
+  "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
 
-  "org.scalatest" %% "scalatest" % scalatestVersion % "test"
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
 )
