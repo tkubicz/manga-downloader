@@ -15,7 +15,7 @@ class EpubWriter extends LazyLogging {
   private val defaultResourceLocation: Map[OpfManifestItemMediaType, String] = Map(
     OpfManifestItemMediaType.ImageJpeg -> "img/",
     OpfManifestItemMediaType.TextCss -> "css/",
-    OpfManifestItemMediaType.ApplicationXhtmlXml, "xhtml/"
+    OpfManifestItemMediaType.ApplicationXhtmlXml -> "xhtml/"
   )
 
   def write(book: Epub, output: Path): Unit = {
