@@ -5,6 +5,8 @@ import java.nio.file.{Files, Paths}
 
 import org.scalatest.{FunSuite, GivenWhenThen, Matchers}
 
+import scala.io.Source
+
 class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
 
   val tmp = System.getProperty("java.io.tmpdir")
@@ -49,5 +51,26 @@ class FileUtilsSpec extends FunSuite with GivenWhenThen with Matchers {
     result shouldEqual Left(_: IOException)
   }
 
+  test("Get InputStream from file from resources") {
+    Given("path to resource file")
+    val path = "/file_test.txt"
 
+    When("InputStream is requested")
+    val is = FileUtils.getResource(path)
+    val str = Source.fromInputStream(is).getLines().mkString("\n").trim
+
+    Then("InputStream content is an excepted string")
+    str shouldEqual "This is a test file content."
+  }
+
+  test("Get Path of the file from resources") {
+    Given("path to resource file")
+    val path = "/file_test.txt"
+
+    When("absolute path is requested")
+    val absolutePath = FileUtils.getResourcePath(path)
+
+    Then("absolute path is valid")
+    absolutePath.toAbsolutePath.toString should endWith(path)
+  }
 }

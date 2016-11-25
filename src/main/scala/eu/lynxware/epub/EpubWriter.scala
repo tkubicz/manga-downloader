@@ -64,7 +64,7 @@ class EpubWriter extends LazyLogging {
 
   private def filterMediaType(book: Epub, mediaType: OpfManifestItemMediaType, folder: String) = book.resources
     .filter(_.mediaType == mediaType)
-    .map(r => (OpfManifestItem(folder + r.path.getFileName.toString, r.id, r.mediaType), r))
+    .map(r => (OpfManifestItem(folder + r.path.getFileName.toString, r.id, r.mediaType, r.property), r))
 
   private def addManifestItemsToZipStream(zos: ZipOutputStream, items: Seq[(OpfManifestItem, Resource)]): Unit =
     items.foreach(item => addNextResourceEntry(zos, item._2))
