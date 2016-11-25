@@ -17,11 +17,23 @@ case class Epub(metadata: OpfMetadata = OpfMetadata(), resources: Seq[Resource] 
     copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ImageJpeg))
   }
 
+  def addJpegImages(images: Seq[(Path, String)]) = {
+    copy(resources = resources ++ images.map(i => Resource(i._1, i._2, OpfManifestItemMediaType.ImageJpeg)))
+  }
+
   def addStyle(path: Path, id: String) = {
     copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.TextCss))
   }
 
-  def addSection(path: Path, id: String, isSpine: Boolean = false, property: Option[OpfManifestItemProperty] = None) = {
+  def addCoverImage(path: Path, id: String) = {
+    copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ImageJpeg, false, Some(OpfManifestItemProperty.CoverImage)))
+  }
+
+  def addNavigation(path: Path, id: String) = {
+    copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ApplicationXhtmlXml, true, Some(OpfManifestItemProperty.Nav)))
+  }
+
+  def addSection(path: Path, id: String, isSpine: Boolean = true, property: Option[OpfManifestItemProperty] = None) = {
     copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ApplicationXhtmlXml, isSpine, property))
   }
 }

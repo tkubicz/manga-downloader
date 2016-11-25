@@ -31,6 +31,10 @@ object FileUtils {
   def createFile(path: Path): Either[IOException, Path] =
     handling(classOf[IOException])({Files.deleteIfExists(path); Files.createFile(path)})
 
+  def getResource(path: String): InputStream = getClass.getResourceAsStream(path)
+
+  def getResourcePath(path: String): Path = Paths.get(getClass.getResource(path).toURI)
+
   def writeContentToFile(path: Path, content: String): Unit = {
     val fos = newFileOutputStream(path)
     val writer = newWriter(fos)

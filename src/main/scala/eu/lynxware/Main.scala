@@ -1,6 +1,7 @@
 package eu.lynxware
 
 import java.io.File
+import java.nio.file.Paths
 import java.util.concurrent.Executors
 
 import com.typesafe.scalalogging.LazyLogging
@@ -21,7 +22,10 @@ object Main extends App with LazyLogging {
   val mangaPath = "/Users/tku/Downloads/berserk/"
   //val mangaPath = FileUtils.homeDirectory.resolve("Pobrane").resolve("berserk")
 
-  downloadManga(mangaName)
+  //downloadManga(mangaName)
+  //buildEpub()
+
+  buildExampleEpub()
 
   def buildEpub(): Unit = {
     val metadata = OpfMetadata()
@@ -29,22 +33,40 @@ object Main extends App with LazyLogging {
       .withCreator("MangaDownloader")
       .withLanguage("en")
 
+    val images = (1 to 90).map(i => (Paths.get(mangaPath + "c001/" + i + ".html.jpg"), "c001_" + i))
+
     val epub = new Epub()
       .withMetadata(metadata)
-      .addSection(FileUtils.homeDirectory.resolve("Downloads").resolve("data").resolve("nav.xhtml"), "nav", false, Some(OpfManifestItemProperty.Nav))
+      .addSection(FileUtils.homeDirectory.resolve("Downloads").resolve("data").resolve("epub30-nav.xhtml"), "nav", false, Some(OpfManifestItemProperty.Nav))
       .addSection(FileUtils.homeDirectory.resolve("Downloads").resolve("data").resolve("content.xhtml"), "tt1", true)
-    //.addJpegImage(mangaPath.resolve("c001/1.html.jpg"), "c001_1")
-    //.addJpegImage(mangaPath.resolve("c001/2.html.jpg"), "c001_2")
-    //.addJpegImage(mangaPath.resolve("c001/3.html.jpg"), "c001_3")
+      .addJpegImages(images)
 
     val epubWriter = new EpubWriter()
     epubWriter.write(epub, FileUtils.homeDirectory.resolve("Downloads").resolve("result.epub"))
   }
 
+  def buildExampleEpub(): Unit = {
+    val metadata = OpfMetadata()
+      .withTitle("EPUB 3.0 Specification")
+      .withCreator("EPUB 3 Working Group")
+      .withLanguage("en")
+
+    val epub = Epub()
+      .withMetadata(metadata)
+      .addSection(FileUtils.getResourcePath("/example/epub30-titlepage.xhtml"), "tt1")
+      .addNavigation(FileUtils.getResourcePath("/example/epub30-nav.xhtml"), "nav")
+      .addCoverImage(FileUtils.getResourcePath("/example/img/epub_logo_color.jpg"), "ci")
+      .addJpegImage(FileUtils.getResourcePath("/example/img/idpflogo_web_125.jpg"), "logo")
+      .addStyle(FileUtils.getResourcePath("/example/css/epub-spec.css"), "css")
+
+    val epubWriter = new EpubWriter()
+    epubWriter.write(epub, FileUtils.homeDirectory.resolve("Pobrane").resolve("epub30.epub"))
+  }
+
   def downloadManga(mangaName: String): Unit = {
     val crawler = MangatownCrawler(mangaName)
     val chapters = crawler.getListOfChapters()
-    val result = chapters.slice(270, 320).map { ch =>
+    val result = chapters.slice(0, 3).map { ch =>
       val chapterName = extractChapterName(ch) match {
         case Some(name) => name
         case None => throw new RuntimeException
