@@ -70,7 +70,7 @@ class EpubWriter extends LazyLogging {
     items.foreach(item => addNextResourceEntry(zos, item._2))
 
   private def addNextResourceEntry(zos: ZipOutputStream, resource: Resource): Unit = {
-    zos.putNextEntry(new ZipEntry(contentFolder + defaultResourceLocation.get(resource.mediaType) + resource.path.getFileName.toString))
+    zos.putNextEntry(new ZipEntry(contentFolder + defaultResourceLocation(resource.mediaType) + resource.path.getFileName.toString))
     Files.copy(resource.path, zos)
     zos.closeEntry()
   }

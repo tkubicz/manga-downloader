@@ -17,6 +17,10 @@ case class Epub(metadata: OpfMetadata = OpfMetadata(), resources: Seq[Resource] 
     copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.ImageJpeg))
   }
 
+  def addJpegImages(images: Seq[(Path, String)]) = {
+    copy(resources = resources ++ images.map(i => Resource(i._1, i._2, OpfManifestItemMediaType.ImageJpeg)))
+  }
+
   def addStyle(path: Path, id: String) = {
     copy(resources = resources :+ Resource(path, id, OpfManifestItemMediaType.TextCss))
   }
