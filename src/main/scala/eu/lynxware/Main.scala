@@ -18,11 +18,15 @@ object Main extends App with LazyLogging {
 
   val chapterNamePattern = s"(c(\\d{1,4}.\\d{1,4}|\\d{1,4}))".r
   val partNamePattern = s"(\\d{1,4}.html)".r
-  val mangaName = "berserk"
-  val mangaPath = "/Users/tku/Downloads/berserk/"
+  //val mangaName = "berserk"
+  //val mangaPath = "/Users/tku/Downloads/berserk/"
+
+  val mangaName = "shingeki_no_kyojin"
+  val mangaPath = "/Users/tku/Downloads/shingeki_no_kyojin/"
+
   //val mangaPath = FileUtils.homeDirectory.resolve("Pobrane").resolve("berserk")
 
-  //downloadManga(mangaName)
+  //downloadManga(mangaName, mangaPath)
   //buildEpub()
 
   buildExampleEpub()
@@ -60,13 +64,13 @@ object Main extends App with LazyLogging {
       .addStyle(FileUtils.getResourcePath("/example/css/epub-spec.css"), "css")
 
     val epubWriter = new EpubWriter()
-    epubWriter.write(epub, FileUtils.homeDirectory.resolve("Pobrane").resolve("epub30.epub"))
+    epubWriter.write(epub, FileUtils.homeDirectory.resolve("Downloads").resolve("epub30.epub"))
   }
 
-  def downloadManga(mangaName: String): Unit = {
+  def downloadManga(mangaName: String, mangaPath: String): Unit = {
     val crawler = MangatownCrawler(mangaName)
     val chapters = crawler.getListOfChapters()
-    val result = chapters.slice(0, 3).map { ch =>
+    val result = chapters.map { ch =>
       val chapterName = extractChapterName(ch) match {
         case Some(name) => name
         case None => throw new RuntimeException

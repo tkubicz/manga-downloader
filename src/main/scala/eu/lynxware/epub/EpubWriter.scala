@@ -22,7 +22,14 @@ class EpubWriter extends LazyLogging {
   private val contentFolder = "EPUB/"
 
   def write(book: Epub, output: Path): Unit = {
-    packToZipFile(book, output)
+    val validationResult = EpubValidator.validate(book)
+    if (validationResult._1) {
+      packToZipFile(book, output)
+    }
+    else {
+      val errors = validationResult._2.mkString("\n")
+      logger.error("Validation failed:\n{}", errors)
+    }
   }
 
   private def packToZipFile(book: Epub, output: Path): Unit = {
@@ -49,6 +56,7 @@ class EpubWriter extends LazyLogging {
     addNextEntry(zos, MimetypeFile.FileName, MimetypeFile().content.getBytes())
     zos.setLevel(9)
   }
+
   private def addContainer(zos: ZipOutputStream): Unit =
     addNextEntry(zos, metaInfFolder + ContainerFile.FileName, ContainerFile().toXml().toString().getBytes())
 
@@ -58,8 +66,11 @@ class EpubWriter extends LazyLogging {
   }
 
   private def filterImage(book: Epub) = filterMediaType(book, OpfManifestItemMediaType.ImageJpeg, defaultResourceLocation(OpfManifestItemMediaType.ImageJpeg))
+
   private def filterCss(book: Epub) = filterMediaType(book, OpfManifestItemMediaType.TextCss, defaultResourceLocation(OpfManifestItemMediaType.TextCss))
+
   private def filterContent(book: Epub) = filterMediaType(book, OpfManifestItemMediaType.ApplicationXhtmlXml, defaultResourceLocation(OpfManifestItemMediaType.ApplicationXhtmlXml))
+
   private def filterSpine(book: Epub): Seq[OpfSpineItem] = book.resources.filter(_.isSpine).map(r => OpfSpineItem(r.id, None))
 
   private def filterMediaType(book: Epub, mediaType: OpfManifestItemMediaType, folder: String) = book.resources
