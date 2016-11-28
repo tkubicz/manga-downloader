@@ -5,7 +5,7 @@
         </encoder>
     </appender>
 
-    <logger name="eu.lynxware" level="TRACE" />
+    <logger name="eu.lynxware" level="DEBUG" />
 
     <root level="DEBUG">
         <appender-ref ref="console"/>

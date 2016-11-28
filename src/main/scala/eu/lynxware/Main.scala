@@ -21,15 +21,13 @@ object Main extends App with LazyLogging {
   //val mangaName = "berserk"
   //val mangaPath = "/Users/tku/Downloads/berserk/"
 
-  val mangaName = "shingeki_no_kyojin"
-  val mangaPath = "/Users/tku/Downloads/shingeki_no_kyojin/"
+  val mangaName = "eden_it_s_an_endless_world"
+  val mangaPath = "/Users/tku/Downloads/eden_it_s_an_endless_world/"
 
   //val mangaPath = FileUtils.homeDirectory.resolve("Pobrane").resolve("berserk")
-
-  //downloadManga(mangaName, mangaPath)
+  downloadManga(mangaName, mangaPath)
   //buildEpub()
-
-  buildExampleEpub()
+  //buildExampleEpub()
 
   def buildEpub(): Unit = {
     val metadata = OpfMetadata()
@@ -67,10 +65,16 @@ object Main extends App with LazyLogging {
     epubWriter.write(epub, FileUtils.homeDirectory.resolve("Downloads").resolve("epub30.epub"))
   }
 
+  var currentProgress: Double = 0.0
+
   def downloadManga(mangaName: String, mangaPath: String): Unit = {
     val crawler = MangatownCrawler(mangaName)
     val chapters = crawler.getListOfChapters()
-    val result = chapters.map { ch =>
+
+    val numberOfChapters = chapters.length
+    val step: Double = (1.0 / numberOfChapters) * 100.0
+
+    val result = chapters.slice(10, 13).map { ch =>
       val chapterName = extractChapterName(ch) match {
         case Some(name) => name
         case None => throw new RuntimeException
@@ -100,7 +104,7 @@ object Main extends App with LazyLogging {
       }
 
       f.onComplete {
-        case Success(e) => updateProgress(e)
+        case Success(e) => updateProgress(e, step)
         case Failure(e) => logger.error("Something went wrong", e)
       }
 
@@ -125,7 +129,8 @@ object Main extends App with LazyLogging {
     logger.info("Download has finished")
   }
 
-  def updateProgress(chapterFinished: String): Unit = {
-    logger.info("Chapter {} has been downloaded", chapterFinished)
+  def updateProgress(chapterFinished: String, step: Double): Unit = synchronized {
+    currentProgress += step
+    logger.info(s"Chapter $chapterFinished has been downloaded. Current progress: $currentProgress")
   }
 }
