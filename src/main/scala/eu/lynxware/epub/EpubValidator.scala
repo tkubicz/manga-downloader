@@ -46,6 +46,6 @@ object EpubValidator {
 
   private def isExternalLink(link: String): Boolean = protocols.exists(p => link.startsWith(p))
 
-  private def filterLinksToTheSameDocument(resourceWithLinks: ResourceWithLinks) = {
-  }
+  private def filterLinksToTheSameDocument(resourceWithLinks: ResourceWithLinks) =
+    resourceWithLinks.copy(links = resourceWithLinks.links.filterNot(_.startsWith("#")))
 }
