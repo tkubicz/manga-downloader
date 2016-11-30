@@ -25,9 +25,9 @@ object Main extends App with LazyLogging {
   val mangaPath = "/Users/tku/Downloads/eden_it_s_an_endless_world/"
 
   //val mangaPath = FileUtils.homeDirectory.resolve("Pobrane").resolve("berserk")
-  downloadManga(mangaName, mangaPath)
+  //downloadManga(mangaName, mangaPath)
   //buildEpub()
-  //buildExampleEpub()
+  buildExampleEpub()
 
   def buildEpub(): Unit = {
     val metadata = OpfMetadata()
@@ -55,14 +55,19 @@ object Main extends App with LazyLogging {
 
     val epub = Epub()
       .withMetadata(metadata)
-      .addSection(FileUtils.getResourcePath("/example/epub30-titlepage.xhtml"), "tt1")
-      .addNavigation(FileUtils.getResourcePath("/example/epub30-nav.xhtml"), "nav")
+      .addNavigation(FileUtils.getResourcePath("/example/xhtml/epub30-nav.xhtml"), "nav")
+      .addSection(FileUtils.getResourcePath("/example/xhtml/epub30-titlepage.xhtml"), "tt1")
+      .addSection(FileUtils.getResourcePath("/example/xhtml/epub30-ocf.xhtml"), "ocf")
+      .addSection(FileUtils.getResourcePath("/example/xhtml/epub30-acknowledgements.xhtml"), "ack")
+      .addSection(FileUtils.getResourcePath("/example/xhtml/epub30-mediaoverlays.xhtml"), "mo")
+      .addSection(FileUtils.getResourcePath("/example/xhtml/epub30-terminology.xhtml"), "term")
+      .addSection(FileUtils.getResourcePath("/example/xhtml/epub30-overview.xhtml"), "ovw")
       .addCoverImage(FileUtils.getResourcePath("/example/img/epub_logo_color.jpg"), "ci")
       .addJpegImage(FileUtils.getResourcePath("/example/img/idpflogo_web_125.jpg"), "logo")
       .addStyle(FileUtils.getResourcePath("/example/css/epub-spec.css"), "css")
 
     val epubWriter = new EpubWriter()
-    epubWriter.write(epub, FileUtils.homeDirectory.resolve("Downloads").resolve("epub30.epub"))
+    epubWriter.write(epub, FileUtils.homeDirectory.resolve("Pobrane").resolve("epub30.epub"))
   }
 
   var currentProgress: Double = 0.0
