@@ -1,4 +1,4 @@
-image: manga-downloader:latest
+image: registry.gitlab.com/tkubicz/manga-downloader:latest
 
 stages:
   - build
