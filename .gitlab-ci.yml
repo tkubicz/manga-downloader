@@ -7,6 +7,3 @@ build:
   stage: build
   script:
     - sbt clean compile test
-  cache:
-    paths:
-      - ~/.ivy2/cache/
