@@ -16,9 +16,9 @@ class OpfFileSpec extends FunSuite with Matchers with GivenWhenThen {
 
     val metadata = OpfMetadata().withTitle(title).withCreator(creator)
     val manifestItems = Seq(
-      OpfManifestItem("xhtml/test1.xhtml", "tt1", OpfManifestItemMediaType.ApplicationXhtmlXml, Some(OpfManifestItemProperty.Nav)),
-      OpfManifestItem("xhtml/test2.xhtml", "tt2", OpfManifestItemMediaType.ApplicationXhtmlXml, None),
-      OpfManifestItem("xhtml/test3.xhtml", "tt3", OpfManifestItemMediaType.ApplicationXhtmlXml, None)
+      OpfManifestItem("xhtml/test1.xhtml", "tt1", MediaTypes.Application.XhtmlXml, Some(OpfManifestItemProperty.Nav)),
+      OpfManifestItem("xhtml/test2.xhtml", "tt2", MediaTypes.Application.XhtmlXml, None),
+      OpfManifestItem("xhtml/test3.xhtml", "tt3", MediaTypes.Application.XhtmlXml, None)
     )
     val spineItems = Seq(OpfSpineItem("tt1"), OpfSpineItem("tt2"), OpfSpineItem("tt3"))
 
@@ -48,7 +48,7 @@ class OpfFileSpec extends FunSuite with Matchers with GivenWhenThen {
     Given("sample OpfManifestItem")
     val href = "xhtml/test.xhtml"
     val id = "tt1"
-    val mediaType = OpfManifestItemMediaType.ApplicationXhtmlXml
+    val mediaType = MediaTypes.Application.XhtmlXml
     val item = OpfManifestItem(href, id, mediaType)
 
     When("OpfManifestItem is serialized to xml")
@@ -65,7 +65,7 @@ class OpfFileSpec extends FunSuite with Matchers with GivenWhenThen {
     Given("sample OpfManifestElement with properties")
     val href = "xhtml/test.xhtml"
     val id = "tt1"
-    val mediaType = OpfManifestItemMediaType.ApplicationXhtmlXml
+    val mediaType = MediaTypes.Application.XhtmlXml
     val property = Some(OpfManifestItemProperty.CoverImage)
     val item = OpfManifestItem(href, id, mediaType, property)
 

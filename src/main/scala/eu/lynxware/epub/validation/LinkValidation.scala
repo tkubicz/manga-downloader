@@ -1,6 +1,6 @@
 package eu.lynxware.epub.validation
 
-import eu.lynxware.epub.file.OpfManifestItemMediaType
+import eu.lynxware.epub.file.MediaTypes
 import eu.lynxware.epub.{Epub, Resource}
 
 import scala.io.Source
@@ -12,7 +12,7 @@ private object LinkValidation {
   private val protocols = Seq("http://", "https://", "ftp://", "mailto:")
 
   private[validation] def findAllLinks(epub: Epub): Seq[ResourceWithLinks] = epub.resources
-    .filter(_.mediaType == OpfManifestItemMediaType.ApplicationXhtmlXml)
+    .filter(_.mediaType == MediaTypes.Application.XhtmlXml)
     .map(r => ResourceWithLinks(r, findAllLinksUsingRegexp(r)))
 
   private[validation] def findAllLinksUsingRegexp(resource: Resource): Seq[String] =

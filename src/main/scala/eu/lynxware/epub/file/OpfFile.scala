@@ -3,8 +3,6 @@ package eu.lynxware.epub.file
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
-
-import eu.lynxware.epub.file.OpfManifestItemMediaType.OpfManifestItemMediaType
 import eu.lynxware.epub.file.OpfManifestItemProperty.OpfManifestItemProperty
 
 import scala.xml._
@@ -20,26 +18,42 @@ object OpfManifestItemProperty extends Enumeration {
   val Switch = Value("switch")
 }
 
-object OpfManifestItemMediaType extends Enumeration {
-  type OpfManifestItemMediaType = Value
 
-  val ImageGif = Value("image/gif")
-  val ImageJpeg = Value("image/jpeg")
-  val ImagePng = Value("image/png")
-  val ImageSvgXml = Value("image/svg+xml")
+object MediaTypes {
+  sealed abstract class MediaType(val name: String) {
+    override def toString: String = name
+  }
 
-  val ApplicationXhtmlXml = Value("application/xhtml+xml")
-  val ApplicationXDtbncxXml = Value("application/x-dtbncx+xml")
-  val ApplicationVndOpentype = Value("application/vnd.ms-opentype")
-  val ApplicationFontWoff = Value("application/font-woff")
-  val ApplicationSmilXml = Value("application/smil+xml")
-  val ApplicationPlsXml = Value("application/pls+xml")
+  sealed abstract class MediaTypeImage(name: String) extends MediaType(name)
+  sealed abstract class MediaTypeApplication(name: String) extends MediaType(name)
+  sealed abstract class MediaTypeAudio(name: String) extends MediaType(name)
+  sealed abstract class MediaTypeText(name: String) extends MediaType(name)
 
-  val AudioMpeg = Value("audio/mpeg")
-  val AudioMp4 = Value("audio/mp4")
+  object Image {
+    case object Jpeg extends MediaTypeImage("image/jpeg")
+    case object Gif extends MediaTypeImage("image/gif")
+    case object Png extends MediaTypeImage("image/png")
+    case object SvgXml extends MediaTypeImage("image/svg+xml")
+  }
 
-  val TextCss = Value("text/css")
-  val TextJavascript = Value("text/javascript")
+  object Application {
+    case object XhtmlXml extends MediaTypeApplication("application/xhtml+xml")
+    case object XDtbncxXml extends MediaTypeApplication("application/x-dtbncx+xml")
+    case object VndOpentype extends MediaTypeApplication("application/vnd.ms-opentype")
+    case object FontWoff extends MediaTypeApplication("application/font-woff")
+    case object SmilXml extends MediaTypeApplication("application/smil+xml")
+    case object PlsXml extends MediaTypeApplication("application/pls+xml")
+  }
+
+  object Audio {
+    case object Mpeg extends MediaTypeAudio("audio/mpeg")
+    case object Mp4 extends MediaTypeAudio("audio/mp4")
+  }
+
+  object Text {
+    case object Css extends MediaTypeText("text/css")
+    case object Javascript extends MediaTypeText("text/javascript")
+  }
 }
 
 case class OpfMetadata(title: String = "unknown",
@@ -76,7 +90,7 @@ object OpfMetadata {
   val DateFormatter = DateTimeFormatter.ofPattern(ISO_8601_DATE_FORMAT)
 }
 
-case class OpfManifestItem(href: String, id: String, mediaType: OpfManifestItemMediaType, property: Option[OpfManifestItemProperty] = None) {
+case class OpfManifestItem(href: String, id: String, mediaType: MediaTypes.MediaType, property: Option[OpfManifestItemProperty] = None) {
   def toXml(): Elem = {
     val elem = <item href={href} id={id} media-type={mediaType.toString}/>
     property match {

@@ -5,7 +5,6 @@ import java.nio.file.{Files, Path}
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
 import com.typesafe.scalalogging.LazyLogging
-import eu.lynxware.epub.file.OpfManifestItemMediaType.OpfManifestItemMediaType
 import eu.lynxware.epub.file._
 import eu.lynxware.epub.validation.EpubValidator
 
@@ -13,10 +12,10 @@ import scala.xml.PrettyPrinter
 
 class EpubWriter extends LazyLogging {
 
-  private val defaultResourceLocation: Map[OpfManifestItemMediaType, String] = Map(
-    OpfManifestItemMediaType.ImageJpeg -> "img/",
-    OpfManifestItemMediaType.TextCss -> "css/",
-    OpfManifestItemMediaType.ApplicationXhtmlXml -> "xhtml/"
+  private val defaultResourceLocation: Map[MediaTypes.MediaType, String] = Map(
+    MediaTypes.Image.Jpeg -> "img/",
+    MediaTypes.Text.Css -> "css/",
+    MediaTypes.Application.XhtmlXml -> "xhtml/"
   )
 
   private val metaInfFolder = "META-INF/"
@@ -66,15 +65,15 @@ class EpubWriter extends LazyLogging {
     addNextEntry(zos, contentFolder + opfFile.fileName, pp.formatNodes(opfFile.toXml()).getBytes())
   }
 
-  private def filterImage(book: Epub) = filterMediaType(book, OpfManifestItemMediaType.ImageJpeg, defaultResourceLocation(OpfManifestItemMediaType.ImageJpeg))
+  private def filterImage(book: Epub) = filterMediaType(book, MediaTypes.Image.Jpeg, defaultResourceLocation(MediaTypes.Image.Jpeg))
 
-  private def filterCss(book: Epub) = filterMediaType(book, OpfManifestItemMediaType.TextCss, defaultResourceLocation(OpfManifestItemMediaType.TextCss))
+  private def filterCss(book: Epub) = filterMediaType(book, MediaTypes.Text.Css, defaultResourceLocation(MediaTypes.Text.Css))
 
-  private def filterContent(book: Epub) = filterMediaType(book, OpfManifestItemMediaType.ApplicationXhtmlXml, defaultResourceLocation(OpfManifestItemMediaType.ApplicationXhtmlXml))
+  private def filterContent(book: Epub) = filterMediaType(book, MediaTypes.Application.XhtmlXml, defaultResourceLocation(MediaTypes.Application.XhtmlXml))
 
   private def filterSpine(book: Epub): Seq[OpfSpineItem] = book.resources.filter(_.isSpine).map(r => OpfSpineItem(r.id, None))
 
-  private def filterMediaType(book: Epub, mediaType: OpfManifestItemMediaType, folder: String) = book.resources
+  private def filterMediaType(book: Epub, mediaType: MediaTypes.MediaType, folder: String) = book.resources
     .filter(_.mediaType == mediaType)
     .map(r => (OpfManifestItem(folder + r.path.getFileName.toString, r.id, r.mediaType, r.property), r))
 
