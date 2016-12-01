@@ -7,6 +7,7 @@ import java.util.zip.{ZipEntry, ZipOutputStream}
 import com.typesafe.scalalogging.LazyLogging
 import eu.lynxware.epub.file.OpfManifestItemMediaType.OpfManifestItemMediaType
 import eu.lynxware.epub.file._
+import eu.lynxware.epub.validation.EpubValidator
 
 import scala.xml.PrettyPrinter
 
