@@ -20,39 +20,40 @@ object OpfManifestItemProperty extends Enumeration {
 
 
 object MediaTypes {
-  sealed abstract class MediaType(val name: String) {
+  sealed abstract class MediaTypeValue(val name: String) {
     override def toString: String = name
   }
 
-  sealed abstract class MediaTypeImage(name: String) extends MediaType(name)
-  sealed abstract class MediaTypeApplication(name: String) extends MediaType(name)
-  sealed abstract class MediaTypeAudio(name: String) extends MediaType(name)
-  sealed abstract class MediaTypeText(name: String) extends MediaType(name)
+  sealed trait MediaType
+  sealed trait MediaTypeImage extends MediaType
+  sealed trait MediaTypeApplication extends MediaType
+  sealed trait MediaTypeAudio extends MediaType
+  sealed trait MediaTypeText extends MediaType
 
   object Image {
-    case object Jpeg extends MediaTypeImage("image/jpeg")
-    case object Gif extends MediaTypeImage("image/gif")
-    case object Png extends MediaTypeImage("image/png")
-    case object SvgXml extends MediaTypeImage("image/svg+xml")
+    case object Jpeg extends MediaTypeValue("image/jpeg") with MediaTypeImage
+    case object Gif extends MediaTypeValue("image/gif") with MediaTypeImage
+    case object Png extends MediaTypeValue("image/png") with MediaTypeImage
+    case object SvgXml extends MediaTypeValue("image/svg+xml") with MediaTypeImage
   }
 
   object Application {
-    case object XhtmlXml extends MediaTypeApplication("application/xhtml+xml")
-    case object XDtbncxXml extends MediaTypeApplication("application/x-dtbncx+xml")
-    case object VndOpentype extends MediaTypeApplication("application/vnd.ms-opentype")
-    case object FontWoff extends MediaTypeApplication("application/font-woff")
-    case object SmilXml extends MediaTypeApplication("application/smil+xml")
-    case object PlsXml extends MediaTypeApplication("application/pls+xml")
+    case object XhtmlXml extends MediaTypeValue("application/xhtml+xml") with MediaTypeImage
+    case object XDtbncxXml extends MediaTypeValue("application/x-dtbncx+xml") with MediaTypeImage
+    case object VndOpentype extends MediaTypeValue("application/vnd.ms-opentype") with MediaTypeImage
+    case object FontWoff extends MediaTypeValue("application/font-woff") with MediaTypeImage
+    case object SmilXml extends MediaTypeValue("application/smil+xml") with MediaTypeImage
+    case object PlsXml extends MediaTypeValue("application/pls+xml") with MediaTypeImage
   }
 
   object Audio {
-    case object Mpeg extends MediaTypeAudio("audio/mpeg")
-    case object Mp4 extends MediaTypeAudio("audio/mp4")
+    case object Mpeg extends MediaTypeValue("audio/mpeg") with MediaTypeImage
+    case object Mp4 extends MediaTypeValue("audio/mp4") with MediaTypeImage
   }
 
   object Text {
-    case object Css extends MediaTypeText("text/css")
-    case object Javascript extends MediaTypeText("text/javascript")
+    case object Css extends MediaTypeValue("text/css") with MediaTypeImage
+    case object Javascript extends MediaTypeValue("text/javascript") with MediaTypeImage
   }
 }
 

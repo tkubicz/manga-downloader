@@ -7,7 +7,8 @@ import java.util.concurrent.Executors
 import com.typesafe.scalalogging.LazyLogging
 import eu.lynxware.crawler.MangatownCrawler
 import eu.lynxware.epub.file.{OpfManifestItemProperty, OpfMetadata}
-import eu.lynxware.epub.{Epub, EpubWriter}
+import eu.lynxware.epub.Epub
+import eu.lynxware.epub.writer.EpubWriter
 import eu.lynxware.util.{FileDownloader, FileUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -67,7 +68,7 @@ object Main extends App with LazyLogging {
       .addStyle(FileUtils.getResourcePath("/example/css/epub-spec.css"), "css")
 
     val epubWriter = new EpubWriter()
-    epubWriter.write(epub, FileUtils.homeDirectory.resolve("Pobrane").resolve("epub30.epub"))
+    epubWriter.write(epub, FileUtils.homeDirectory.resolve("Downloads").resolve("epub30.epub"))
   }
 
   var currentProgress: Double = 0.0

@@ -12,11 +12,12 @@ private object LinkValidation {
   private val nameOrIdRegexp = "(?:name=\"|id=\")([^\\\"\\r\\n]+)".r
   private val protocols = Seq("http://", "https://", "ftp://", "mailto:")
 
+  private val findInterestingLinks = findAllLinks _ andThen filterOutLinksWithProtocols
+  private val localAnchorLinks = findInterestingLinks andThen filterLocalAnchorLinks
+  private val remoteAnchorLinks = findInterestingLinks andThen filterOutLocalAnchorLinks andThen filterRemoteAnchorLinks
+
   // TODO: Change result type to return also messages
   private[validation] def validateLinks(epub: Epub): (Boolean, String) = {
-    val findInterestingLinks = findAllLinks _ andThen filterOutLinksWithProtocols
-    val localAnchorLinks = findInterestingLinks andThen filterLocalAnchorLinks
-
     val res = localAnchorLinks(epub).map(r => findInvalidLocalAnchorLinks(r.links, r.anchors))
     val messages = res.flatten
 
@@ -43,10 +44,15 @@ private object LinkValidation {
   private def filterOutLocalAnchorLinks(resourcesWithLinks: Seq[ResourceWithLinks]): Seq[ResourceWithLinks] =
     resourcesWithLinks.map(r => r.copy(links = r.links.filterNot(isLocalAnchorLink)))
 
+  private def filterRemoteAnchorLinks(resourcesWithLinks: Seq[ResourceWithLinks]): Seq[ResourceWithLinks] =
+    resourcesWithLinks.map(r => r.copy(links = r.links.filter(isRemoteAnchorLink)))
+
   private def findInvalidLocalAnchorLinks(links: Seq[String], anchors: Seq[String]): Seq[String] =
     links.filterNot(anchors.toSet)
 
   private def isExternalLink(link: String): Boolean = protocols.exists(p => link.startsWith(p))
 
   private def isLocalAnchorLink(link: String): Boolean = link.startsWith("#")
+
+  private def isRemoteAnchorLink(link: String): Boolean = !link.startsWith("#") && link.contains("#")
 }
